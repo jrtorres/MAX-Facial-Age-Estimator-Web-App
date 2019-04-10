@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-FROM python:2.7
+FROM python:3.7.3
 
 RUN apt-get update && apt-get install libgtk2.0 -y
 RUN pip install opencv-python

@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/IBM/MAX-Facial-Age-Estimator-Web-App.svg?branch=master)](https://travis-ci.org/IBM/MAX-Facial-Age-Estimator-Web-App)
-
 # Create a web app to show the age estimation from the detected human faces
 
 The biological ages of people oftentimes provide a significant information for many applications; for example, surveillance, product recommendation, etc.
@@ -49,57 +47,26 @@ scripting of HTML.
 * [Bootstrap 3](https://getbootstrap.com): Bootstrap is a free and open-source front-end library for designing websites
 and web applications.
 
-# Steps
-
-Ways to run the code pattern:
-
-- [Deploy on Kubernetes](#deploy-on-kubernetes)
-- [Run Locally](#run-locally)
-
-## Deploy on Kubernetes
-
-You can also deploy the model and web app on Kubernetes using the latest docker images on Docker Hub.
-
-On your Kubernetes cluster, run the following commands:
-
-    kubectl apply -f https://raw.githubusercontent.com/IBM/MAX-Facial-Age-Estimator/master/max-facial-age-estimator.yaml
-    kubectl apply -f https://raw.githubusercontent.com/IBM/MAX-Facial-Age-Estimator-Web-App/master/max-facial-age-estimator-web-app.yaml
-
-The web app will be available at port `7000` of your cluster.
-The model will only be available internally, but can be accessed externally through the `NodePort`.
-
-## Run Locally
-
-#### Setting up the MAX Model
-
-1. [Deploy the Model](#1-deploy-the-model)
-2. [Experimenting with the API (Optional)](#2-experimenting-with-the-api-optional)
-
-#### Starting the Web App
-
-1. [Check out the code](#1-check-out-the-code)
-2. [Installing dependencies](#2-installing-dependencies)
-3. [Running the server](#3-running-the-server)
-4. [Instructions for Docker (Optional)](#4-instructions-for-docker-optional)
-
 ### Setting up the MAX Model
 
 > NOTE: The set of instructions in this section are a modified version of the one found on the
 [Facial Age Estimator Project Page](https://github.com/IBM/MAX-Facial-Age-Estimator)
 
-#### 1. Deploy the Model
+#### Deploy the Model
 
 To run the docker image, which automatically starts the model serving API, run:
 
-    docker run -it -p 5000:5000 codait/max-facial-age-estimator
+    docker run -it -p 5000:5000 -p 7000:7000 --name=max-facial-age-estimator codait/max-facial-age-estimator
 
-This will pull a pre-built image from Docker Hub (or use an existing image if already cached locally) and run it.
+This will pull a pre-built image from Docker Hub (or use an existing image if already cached locally) and run it. To run the web app 
+with Docker the containers running the model serving API and the web app need to share the same
+network stack. This is done by mapping an additional port in the container to a port on the host machine. In the example above it is mapped to port `7000` on the host but other ports can also be used.
 If you'd rather build the model locally you can follow the steps in the
 [model README](https://github.com/IBM/MAX-Facial-Age-Estimator/blob/master/README.md#steps).
 
 _Note_ that currently this docker image is CPU only (we will add support for GPU images later).
 
-#### 2. Experimenting with the API (Optional)
+#### (Optional) Experimenting with the API
 
 The API server automatically generates an interactive Swagger documentation page.
 Go to `http://localhost:5000` to load it. From there you see the API with the test requests.
@@ -134,17 +101,27 @@ You can also test it on the command line, for example:
 
 ### Starting the Web App
 
-#### 1. Check out the code
+#### Check out the code
 
 Clone the Age Estimation Web App repository locally by running the following command:
 
-    git clone https://github.com/IBM/MAX-Facial-Age-Estimator-Web-App
-
-> Note: You may need to `cd ..` out of the MAX-Age-Estimation directory first
+    git clone https://github.com/jrtorres/MAX-Facial-Age-Estimator-Web-App.git
 
 Then change directory into the local repository
 
     cd MAX-Facial-Age-Estimator-Web-App
+
+#### Build and Run the Web App Container
+
+Build the web app image by running:
+
+    docker build -t max-age-estimator-web-app .
+
+Run the web app container using:
+
+    docker run -it --net='container:max-facial-age-estimator' max-age-estimator-web-app
+
+Use a browser to visit the application at http://localhost:7000
 
 #### 2. Installing dependencies
 
@@ -182,31 +159,7 @@ You can then access the web app at: [`http://localhost:7000`](http://localhost:7
 
 The Facial Age Estimator endpoint must be available at `http://localhost:5000` for the web app to successfully start.
 
-#### 4. Instructions for Docker (Optional)
 
-To run the web app with Docker the containers running the web server and the REST endpoint need to share the same
-network stack. This is done in the following steps:
-
-Modify the command that runs the Facial Age Estimator REST endpoint to map an additional port in the container to a
-port on the host machine. In the example below it is mapped to port `7000` on the host but other ports can also be used.
-
-    docker run -it -p 5000:5000 -p 7000:7000 --name=max-facial-age-estimator codait/max-facial-age-estimator
-
-Build the web app image by running:
-
-    docker build -t max-age-estimator-web-app .
-
-Run the web app container using:
-
-    docker run -it --net='container:max-facial-age-estimator' max-age-estimator-web-app
-
-##### Using the Docker Hub Image
-
-You can also deploy the web app with the latest docker image available on DockerHub by running:
-
-    docker run --net='container:max-facial-age-estimator' -it codait/max-facial-age-estimator-web-app
-
-This will use the model docker container run above and can be run without cloning the web app repo locally.
 
 # Links
 
