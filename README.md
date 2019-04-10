@@ -54,36 +54,36 @@ and web applications.
 
 #### Deploy the Model
 
-To run the docker image, which automatically starts the model serving API, run:
+1. To run the docker image, which automatically starts the model serving API, run:
 
+   ```bash
     docker run -it -p 5000:5000 -p 7000:7000 --name=max-facial-age-estimator codait/max-facial-age-estimator
+   ```
 
-This will pull a pre-built image from Docker Hub (or use an existing image if already cached locally) and run it. To run the web app 
-with Docker the containers running the model serving API and the web app need to share the same
-network stack. This is done by mapping an additional port in the container to a port on the host machine. In the example above it is mapped to port `7000` on the host but other ports can also be used.
-If you'd rather build the model locally you can follow the steps in the
-[model README](https://github.com/IBM/MAX-Facial-Age-Estimator/blob/master/README.md#steps).
+   This will pull a pre-built image from Docker Hub (or use an existing image if already cached locally) and run it. To run the web app with Docker the containers running the model serving API and the web app need to share the same network stack. This is done by mapping an additional port in the container to a port on the host machine. In the example above it is mapped to port `7000` on the host but other ports can also be used.If you'd rather build the model locally you can follow the steps in the[model README](https://github.com/IBM/MAX-Facial-Age-Estimator/blob/master/README.md#steps).
 
-_Note_ that currently this docker image is CPU only (we will add support for GPU images later).
+   _Note_ that currently this docker image is CPU only (we will add support for GPU images later).
 
 #### (Optional) Experimenting with the API
 
-The API server automatically generates an interactive Swagger documentation page.
+1. The API server automatically generates an interactive Swagger documentation page.
 Go to `http://localhost:5000` to load it. From there you see the API with the test requests.
 
-Use the `model/predict` endpoint to load a test file and get estimated ages and bounding boxes for the image from the API.
+   Use the `model/predict` endpoint to load a test file and get estimated ages and bounding boxes for the image from the API.
 
-The [model assets folder](https://github.com/IBM/MAX-Facial-Age-Estimator/tree/master/assets)
+1. The [model assets folder](https://github.com/IBM/MAX-Facial-Age-Estimator/tree/master/assets)
 contains one image you can use to test out the API, or you can use your own.
 
-You can also test it on the command line, for example:
+1. You can also test it on the command line, for example:
 
-    curl -F "image=@path/to/tom_cruise.jpg" -X POST http://localhost:5000/model/predict
+   ```bash
+   curl -F "image=@path/to/tom_cruise.jpg" -X POST http://localhost:5000/model/predict
+   ```
 
-```json
-{
-  "status": "Okay",
-  "predictions": [
+   ```json
+   {
+   "status": "Okay",
+   "predictions": [
     {
       "age_estimation": [
         48
@@ -94,72 +94,88 @@ You can also test it on the command line, for example:
         "379",
         "515"
       ]
-    }
-  ]
-}
-```
+   }
+   ]
+   }
+   ```
 
-### Starting the Web App
+### Run the Web App using Docker
 
 #### Check out the code
 
-Clone the Age Estimation Web App repository locally by running the following command:
+1. Clone the Age Estimation Web App repository locally by running the following command:
 
+   ```bash
     git clone https://github.com/jrtorres/MAX-Facial-Age-Estimator-Web-App.git
+   ```
 
-Then change directory into the local repository
+1. Then change directory into the local repository
 
+   ```bash
     cd MAX-Facial-Age-Estimator-Web-App
+   ```
 
 #### Build and Run the Web App Container
 
-Build the web app image by running:
+1. Build the web app image by running:
 
+   ```bash
     docker build -t max-age-estimator-web-app .
+   ```
 
-Run the web app container using:
+1. Run the web app container using:
 
+   ```bash
     docker run -it --net='container:max-facial-age-estimator' max-age-estimator-web-app
+   ```
 
-Use a browser to visit the application at http://localhost:7000
+1. Use a browser to visit the application at [`http://localhost:7000`](http://localhost:7000)
 
-#### 2. Installing dependencies
+### (Optional) Run the Web App using Python
 
-The general recommendation for Python development is to use a virtual environment [(venv)](https://docs.python.org/3/tutorial/venv.html). To install and initialize a virtual environment, use the `venv` module on Python 3 (you install the virtualenv library for Python 2.7):
+If you have Python installed locally, you can run the web application component locally.
 
-```bash
-# Create the virtual environment using Python. Use one of the two commands depending on your Python version.
-# Note, it may be named python3 on your system.
+1. If you have not cloned the age estimation web application repository locally yet, run the following:
 
-$ python -m venv mytestenv       # Python 3.X
-$ virtualenv mytestenv           # Python 2.X
+   ```bash
+    git clone https://github.com/jrtorres/MAX-Facial-Age-Estimator-Web-App.git
+   ```
 
-# Now source the virtual environment. Use one of the two commands depending on your OS.
+1. Then change directory into the local repository
 
-$ source mytestenv/bin/activate  # Mac or Linux
-$ ./mytestenv/Scripts/activate   # Windows PowerShell
-```
+   ```bash
+    cd MAX-Facial-Age-Estimator-Web-App
+   ```
 
-Before running this web app you must install its dependencies:
+1. The general recommendation for Python development is to use a virtual environment [(venv)](https://docs.python.org/3/tutorial/venv.html). To install and initialize a virtual environment, use the `venv` module on Python 3:
 
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   # Create the virtual environment using Python.
+   # Note, it may be named python3 on your system.
 
-> **TIP** :bulb: To terminate the virtual environment use the `deactivate` command.
+   $ python -m venv mytestenv       # Python 3.X
 
+   # Now source the virtual environment. Use one of the two commands depending on your OS.
 
-#### 3. Running the server
+   $ source mytestenv/bin/activate  # Mac or Linux
+   $ ./mytestenv/Scripts/activate   # Windows PowerShell
+   ```
 
-You then start the web app by running:
+1. Before running this web app you must install its dependencies:
 
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   > **TIP** :bulb: To terminate the virtual environment use the `deactivate` command.
+
+1. You then start the web app by running:
+
+   ```bash
     python app.py
+   ```
 
-You can then access the web app at: [`http://localhost:7000`](http://localhost:7000)
-
-The Facial Age Estimator endpoint must be available at `http://localhost:5000` for the web app to successfully start.
-
-
+1. You can then access the web app at: [`http://localhost:7000`](http://localhost:7000)
 
 # Links
 
